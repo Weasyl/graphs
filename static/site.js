@@ -287,6 +287,20 @@ d3.json('/query?query=follows_vs_submissions', function (error, j) {
     chart.draw();
 });
 
+d3.json('/query?query=favorites_vs_view_time', function (error, j) {
+    var data = j.result.map(function (v) {
+        return {'id': v[0], 'type': 'submission', 'average view time': v[1], 'visits': v[2], 'favorites': v[3]};
+    });
+    var svg = dimple.newSvg('#submission-visits-vs-view-time-vs-favorites', 800, 600);
+    var chart = new dimple.chart(svg, data);
+    chart.setBounds(120, 30, 660, 500)
+    chart.addMeasureAxis('x', 'average view time').tickFormat = 'd';
+    chart.addMeasureAxis('y', 'favorites').tickFormat = 'd';
+    chart.addColorAxis('visits').tickFormat = 'd';
+    chart.addSeries(['id', 'type'], dimple.plot.bubble);
+    chart.draw();
+});
+
 // d3.json('/query?query=follows_vs_submissions_clustered', function (error, j) {
 //     var data = j.result.map(function (v) {
 //         return {'submissions': v[0], 'follows': v[1], 'users': Math.log(v[2])};

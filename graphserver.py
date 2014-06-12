@@ -4,6 +4,7 @@ import json
 import sys
 import time
 
+import treq
 from twisted.internet import endpoints, defer, task
 from twisted.web import resource, server, static
 from txpostgres import txpostgres
@@ -301,15 +302,19 @@ def serializeOther(obj):
 class QueriesResource(resource.Resource):
     cacheLength = 60 * 60 * 24
 
-    def __init__(self, conn):
+    def __init__(self, conn, piwikToken):
         resource.Resource.__init__(self)
         self.conn = conn
+        self.piwikToken = piwikToken
         self.cache = {}
 
     def render_GET(self, request):
         request.setHeader('Content-Type', 'application/json')
         query = request.args.get('query', [None])[0]
-        if not query or query not in QUERIES:
+        if not query:
+            return json.dumps({'error': 'bad query'})
+        meth = getattr(self, 'query_' + query, None)
+        if meth is None and query not in QUERIES:
             return json.dumps({'error': 'bad query'})
 
         if query in self.cache:
@@ -319,7 +324,10 @@ class QueriesResource(resource.Resource):
                 self._reply(results, request)
                 return server.NOT_DONE_YET
 
-        d = self.conn.runQuery(QUERIES[query])
+        if meth is None:
+            d = self.conn.runQuery(QUERIES[query])
+        else:
+            d = meth()
         d.addCallback(self._reply, request)
         d.addCallback(self._cache, query)
         d.addErrback(request.processingFailed)
@@ -333,6 +341,24 @@ class QueriesResource(resource.Resource):
     def _cache(self, results, query):
         self.cache[query] = time.time(), results
 
+    @defer.inlineCallbacks
+    def query_favorites_vs_view_time(self):
+        resp = yield treq.get(
+            'https://www.weasyl.com/piwik/index.php?module=API&method=Actions.getPageUrls'
+            '&idSite=1&period=day&date=yesterday&format=json&idSubtable=29&depth=200&token_auth=' + self.piwikToken.encode())
+        j = yield treq.json_content(resp)
+        submissions = [int(row['label']) for row in j if row['label'].isdigit()]
+        favorites = yield self.conn.runQuery("""
+            SELECT targetid submitid, 
+                   count(*) favorites 
+            FROM   favorite 
+            WHERE  type = 's' 
+                   AND targetid IN %s 
+            GROUP  BY targetid 
+        """, (tuple(submissions),))
+        favorites = dict(favorites)
+        defer.returnValue([[submitid, row['avg_time_on_page'], row['nb_visits'], favorites.get(submitid, 0)] for row, submitid in zip(j, submissions)])
+
 
 @defer.inlineCallbacks
 def main(reactor, config, description):
@@ -340,10 +366,10 @@ def main(reactor, config, description):
         configObj = json.load(infile)
 
     conn = txpostgres.Connection(reactor=reactor)
-    yield conn.connect(**configObj)
+    yield conn.connect(**configObj['postgres'])
 
     rootResource = resource.Resource()
-    rootResource.putChild('query', QueriesResource(conn))
+    rootResource.putChild('query', QueriesResource(conn, configObj['piwik']))
     rootResource.putChild('static', static.File('static'))
 
     endpoint = endpoints.serverFromString(reactor, description)
