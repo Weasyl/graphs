@@ -291,14 +291,14 @@ d3.json('/query?query=follows_vs_submissions', function (error, j) {
 
 d3.json('/query?query=favorites_vs_view_time', function (error, j) {
     var data = j.result.map(function (v) {
-        return {'id': v[0], 'type': 'submission', 'average view time (s)': v[1], 'visits': v[2], 'favorites': v[3]};
+        return {'id': v[0], 'type': 'submission', 'average view time (s) yesterday': v[1], 'visits yesterday': v[2], 'total favorites': v[3]};
     });
     var svg = dimple.newSvg('#submission-visits-vs-view-time-vs-favorites', 800, 600);
     var chart = new dimple.chart(svg, data);
     chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'average view time (s)').tickFormat = 'd';
-    chart.addMeasureAxis('y', 'favorites').tickFormat = 'd';
-    chart.addColorAxis('visits').tickFormat = 'd';
+    chart.addMeasureAxis('x', 'average view time (s) yesterday').tickFormat = 'd';
+    chart.addMeasureAxis('y', 'total favorites').tickFormat = 'd';
+    chart.addColorAxis('visits yesterday').tickFormat = 'd';
     chart.addSeries(['id', 'type'], dimple.plot.bubble).addEventHandler('click', function (ev) {
         var submitid = ev.seriesValue[0];
         window.open('https://www.weasyl.com/submission/' + submitid, '_blank');
