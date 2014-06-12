@@ -11,6 +11,16 @@ from txpostgres import txpostgres
 
 
 QUERIES = {
+    'reports_by_day': """
+        SELECT *
+        FROM
+            (SELECT
+                 date_trunc('day', to_timestamp(unixtime)) AS day,
+                 count(*) count
+             FROM report
+             GROUP BY day) subq
+        WHERE day >= '2012-10-01'::timestamp
+    """,
     'submissions_by_day_and_rating': """
         SELECT *
         FROM
