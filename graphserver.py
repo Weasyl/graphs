@@ -263,6 +263,27 @@ QUERIES = {
         ORDER  BY score DESC 
         LIMIT  250
     """,
+    'follows_vs_submissions_clustered': """
+        WITH follows 
+             AS (SELECT otherid  userid, 
+                        count(*) follows 
+                 FROM   watchuser 
+                 GROUP  BY otherid), 
+             submissions 
+             AS (SELECT userid, 
+                        count(*) submissions 
+                 FROM   submission 
+                 GROUP  BY userid) 
+        SELECT min(COALESCE(submissions, 0)), 
+               min(COALESCE(follows, 0)), 
+               count(*) 
+        FROM   login 
+               LEFT JOIN follows using (userid) 
+               LEFT JOIN submissions using (userid) 
+        GROUP  BY COALESCE(submissions, 0) / 40, 
+                  COALESCE(follows, 0) / 100 
+        ORDER  BY count(*) DESC 
+    """,
 }
 
 

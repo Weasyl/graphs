@@ -287,6 +287,20 @@ d3.json('/query?query=follows_vs_submissions', function (error, j) {
     chart.draw();
 });
 
+// d3.json('/query?query=follows_vs_submissions_clustered', function (error, j) {
+//     var data = j.result.map(function (v) {
+//         return {'submissions': v[0], 'follows': v[1], 'users': Math.log(v[2])};
+//     });
+//     var svg = dimple.newSvg('#clustered-follows-vs-submissions', 800, 600);
+//     var chart = new dimple.chart(svg, data);
+//     chart.setBounds(120, 30, 660, 500)
+//     chart.addMeasureAxis('x', 'submissions').tickFormat = 'd';
+//     chart.addMeasureAxis('y', 'follows').tickFormat = 'd';
+//     chart.addColorAxis('users');
+//     chart.addSeries(null, dimple.plot.bubble);
+//     chart.draw();
+// });
+
 // d3.json('/query?query=tag_counts', function (error, j) {
 //     var data = j.result.map(function (v) { return [v[1], v[0]] });
 //     data.sort(function (a, b) { return d3.ascending(a[0], b[0]); });
