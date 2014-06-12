@@ -261,7 +261,7 @@ QUERIES = {
                JOIN submissions using (userid) 
                JOIN profile using (userid)
         ORDER  BY score DESC 
-        LIMIT  500
+        LIMIT  250
     """,
 }
 
