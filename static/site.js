@@ -283,21 +283,26 @@ d3.json('/query?query=follows_vs_submissions', function (error, j) {
     chart.setBounds(120, 30, 660, 500)
     chart.addMeasureAxis('x', 'submissions').tickFormat = 'd';
     chart.addMeasureAxis('y', 'follows').tickFormat = 'd';
-    chart.addSeries(['user'], dimple.plot.bubble);
+    chart.addSeries('user', dimple.plot.bubble).addEventHandler('click', function (ev) {
+        window.open('https://www.weasyl.com/~' + ev.seriesValue, '_blank');
+    });
     chart.draw();
 });
 
 d3.json('/query?query=favorites_vs_view_time', function (error, j) {
     var data = j.result.map(function (v) {
-        return {'id': v[0], 'type': 'submission', 'average view time': v[1], 'visits': v[2], 'favorites': v[3]};
+        return {'id': v[0], 'type': 'submission', 'average view time (s)': v[1], 'visits': v[2], 'favorites': v[3]};
     });
     var svg = dimple.newSvg('#submission-visits-vs-view-time-vs-favorites', 800, 600);
     var chart = new dimple.chart(svg, data);
     chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'average view time').tickFormat = 'd';
+    chart.addMeasureAxis('x', 'average view time (s)').tickFormat = 'd';
     chart.addMeasureAxis('y', 'favorites').tickFormat = 'd';
     chart.addColorAxis('visits').tickFormat = 'd';
-    chart.addSeries(['id', 'type'], dimple.plot.bubble);
+    chart.addSeries(['id', 'type'], dimple.plot.bubble).addEventHandler('click', function (ev) {
+        var submitid = ev.seriesValue[0];
+        window.open('https://www.weasyl.com/submission/' + submitid, '_blank');
+    });
     chart.draw();
 });
 
