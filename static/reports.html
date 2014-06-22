@@ -1,8 +1,19 @@
-<div id="closers"></div>
-<svg id="chart" style="height: 800px"></svg>
+<style>
+  * { font-family: sans-serif; }
+  .graph { width: 800px; height: 600px; margin: 1em auto 5em; }
+  h3 { text-align: center; margin: 0; }
+</style>
+
+<h3>Moderator prolificacy</h3>
+<div class="graph" id="closers"></div>
+<h3>Reports over time</h3>
+<div class="graph" id="reports-by-day"></div>
+<h3>Open/closed reports over time</h3>
+<svg class="graph" id="chart"></svg>
 
 <script src="d3.min.js" charset="utf-8"></script>
 <script src="dimple.v2.0.0.min.js"></script>
 <script src="nv.d3.min.js"></script>
 <link href="nv.d3.css" rel="stylesheet">
+<script src="dygraph-combined.js"></script>
 <script src="reports.js" async></script>

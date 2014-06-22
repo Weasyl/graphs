@@ -3,6 +3,7 @@ import decimal
 import json
 import sys
 import time
+import urllib
 
 import treq
 from twisted.internet import endpoints, defer, task
@@ -295,6 +296,15 @@ QUERIES = {
                   COALESCE(follows, 0) / 100 
         ORDER  BY count(*) DESC 
     """,
+    'top_reporters': """
+        SELECT username, 
+               count(*) 
+        FROM   reportcomment 
+               JOIN profile USING (userid) 
+        GROUP  BY username 
+        ORDER  BY count(*) DESC 
+        LIMIT  25 
+    """,
 }
 
 
@@ -351,11 +361,29 @@ class QueriesResource(resource.Resource):
     def _cache(self, results, query):
         self.cache[query] = time.time(), results
 
+    def _piwikParameters(self, **params):
+        params['token_auth'] = self.piwikToken.encode()
+        return urllib.urlencode(params)
+
     @defer.inlineCallbacks
     def query_favorites_vs_view_time(self):
-        resp = yield treq.get(
-            'https://www.weasyl.com/piwik/index.php?module=API&method=Actions.getPageUrls'
-            '&idSite=1&period=day&date=yesterday&format=json&idSubtable=29&depth=200&token_auth=' + self.piwikToken.encode())
+        resp = yield treq.get('https://www.weasyl.com/piwik/index.php?' + self._piwikParameters(
+                module='API',
+                method='Actions.getPageUrls',
+                idSite='1',
+                period='day',
+                date='yesterday',
+                format='json'))
+        j = yield treq.json_content(resp)
+        subtable = next(str(row['idsubdatatable']) for row in j if row['label'] == 'submission')
+        resp = yield treq.get('https://www.weasyl.com/piwik/index.php?' + self._piwikParameters(
+                module='API',
+                method='Actions.getPageUrls',
+                idSite='1',
+                period='day',
+                date='yesterday',
+                format='json',
+                idSubtable=subtable))
         j = yield treq.json_content(resp)
         submissions = [int(row['label']) for row in j if row['label'].isdigit()]
         favorites = yield self.conn.runQuery("""

@@ -306,6 +306,19 @@ d3.json('/query?query=favorites_vs_view_time', function (error, j) {
     chart.draw();
 });
 
+d3.json('/query?query=top_reporters', function (error, j) {
+    var data = j.result.map(function (v) {
+        return {'reporter': v[0], 'reports': v[1]};
+    });
+    var svg = dimple.newSvg('#top-reporters', 800, 600);
+    var chart = new dimple.chart(svg, data);
+    chart.setBounds(120, 30, 660, 500)
+    chart.addMeasureAxis('x', 'reports').tickFormat = 'd';
+    chart.addCategoryAxis('y', 'reporter');
+    chart.addSeries(null, dimple.plot.bar);
+    chart.draw();
+});
+
 // d3.json('/query?query=follows_vs_submissions_clustered', function (error, j) {
 //     var data = j.result.map(function (v) {
 //         return {'submissions': v[0], 'follows': v[1], 'users': Math.log(v[2])};

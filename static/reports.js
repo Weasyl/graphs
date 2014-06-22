@@ -64,3 +64,20 @@ d3.json('/query?query=tickets', function (error, j) {
     chart.addSeries(null, dimple.plot.bar);
     chart.draw();
 });
+
+var dateFormat = d3.time.format('%Y-%m-%dT%H:%M:%S');
+
+d3.json('/query?query=reports_by_day', function (error, j) {
+    var data = j.result.map(function (v) {
+        return [dateFormat.parse(v[0]), v[1]];
+    });
+    data.sort(function (a, b) { return d3.ascending(a[0], b[0]); });
+    new Dygraph(
+        'reports-by-day',
+        data,
+        {
+            labels: ['date', 'reports'],
+            xlabel: 'Report date',
+            ylabel: 'Number of reports',
+        });
+});
