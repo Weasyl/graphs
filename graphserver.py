@@ -322,10 +322,9 @@ def serializeOther(obj):
 class QueriesResource(resource.Resource):
     cacheLength = 60 * 60 * 24
 
-    def __init__(self, conn, piwikToken):
+    def __init__(self, conn):
         resource.Resource.__init__(self)
         self.conn = conn
-        self.piwikToken = piwikToken
         self.cache = {}
 
     def render_GET(self, request):
@@ -361,42 +360,6 @@ class QueriesResource(resource.Resource):
     def _cache(self, results, query):
         self.cache[query] = time.time(), results
 
-    def _piwikParameters(self, **params):
-        params['token_auth'] = self.piwikToken.encode()
-        return urllib.urlencode(params)
-
-    @defer.inlineCallbacks
-    def query_favorites_vs_view_time(self):
-        resp = yield treq.get('https://www.weasyl.com/piwik/index.php?' + self._piwikParameters(
-                module='API',
-                method='Actions.getPageUrls',
-                idSite='1',
-                period='day',
-                date='yesterday',
-                format='json'))
-        j = yield treq.json_content(resp)
-        subtable = next(str(row['idsubdatatable']) for row in j if row['label'] == 'submission')
-        resp = yield treq.get('https://www.weasyl.com/piwik/index.php?' + self._piwikParameters(
-                module='API',
-                method='Actions.getPageUrls',
-                idSite='1',
-                period='day',
-                date='yesterday',
-                format='json',
-                idSubtable=subtable))
-        j = yield treq.json_content(resp)
-        submissions = [int(row['label']) for row in j if row['label'].isdigit()]
-        favorites = yield self.conn.runQuery("""
-            SELECT targetid submitid, 
-                   count(*) favorites 
-            FROM   favorite 
-            WHERE  type = 's' 
-                   AND targetid IN %s 
-            GROUP  BY targetid 
-        """, (tuple(submissions),))
-        favorites = dict(favorites)
-        defer.returnValue([[submitid, row['avg_time_on_page'], row['nb_visits'], favorites.get(submitid, 0)] for row, submitid in zip(j, submissions)])
-
 
 @defer.inlineCallbacks
 def main(reactor, config, description):
@@ -407,7 +370,7 @@ def main(reactor, config, description):
     yield conn.connect(**configObj['postgres'])
 
     rootResource = resource.Resource()
-    rootResource.putChild('query', QueriesResource(conn, configObj['piwik']))
+    rootResource.putChild('query', QueriesResource(conn))
     rootResource.putChild('static', static.File('static'))
 
     endpoint = endpoints.serverFromString(reactor, description)

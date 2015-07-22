@@ -312,27 +312,6 @@ d3.json('/query?query=follows_vs_submissions', function (error, j) {
     chart.draw();
 });
 
-d3.json('/query?query=favorites_vs_view_time', function (error, j) {
-    var data = j.result.map(function (v) {
-        return {'id': v[0], 'type': 'submission', 'average view time (s) yesterday': v[1], 'visits yesterday': v[2], 'total favorites': v[3]};
-    });
-    var svg = dimple.newSvg('#submission-visits-vs-view-time-vs-favorites', 800, 600);
-    var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 500);
-    var axisX = chart.addMeasureAxis('x', 'average view time (s) yesterday')
-    axisX.tickFormat = 'd';
-    axisX.showGridlines = false;
-    var axisY = chart.addMeasureAxis('y', 'total favorites')
-    axisY.tickFormat = 'd';
-    axisY.showGridlines = false;
-    chart.addColorAxis('visits yesterday').tickFormat = 'd';
-    chart.addSeries(['id', 'type'], dimple.plot.bubble).addEventHandler('click', function (ev) {
-        var submitid = ev.seriesValue[0];
-        window.open('https://www.weasyl.com/submission/' + submitid, '_blank');
-    });
-    chart.draw();
-});
-
 d3.json('/query?query=top_reporters', function (error, j) {
     var data = j.result.map(function (v) {
         return {'reporter': v[0], 'reports': v[1]};
@@ -347,30 +326,3 @@ d3.json('/query?query=top_reporters', function (error, j) {
     chart.addSeries(null, dimple.plot.bar);
     chart.draw();
 });
-
-// d3.json('/query?query=follows_vs_submissions_clustered', function (error, j) {
-//     var data = j.result.map(function (v) {
-//         return {'submissions': v[0], 'follows': v[1], 'users': Math.log(v[2])};
-//     });
-//     var svg = dimple.newSvg('#clustered-follows-vs-submissions', 800, 600);
-//     var chart = new dimple.chart(svg, data);
-//     chart.setBounds(120, 30, 660, 500)
-//     chart.addMeasureAxis('x', 'submissions').tickFormat = 'd';
-//     chart.addMeasureAxis('y', 'follows').tickFormat = 'd';
-//     chart.addColorAxis('users');
-//     chart.addSeries(null, dimple.plot.bubble);
-//     chart.draw();
-// });
-
-// d3.json('/query?query=tag_counts', function (error, j) {
-//     var data = j.result.map(function (v) { return [v[1], v[0]] });
-//     data.sort(function (a, b) { return d3.ascending(a[0], b[0]); });
-//     new Dygraph(
-//         'tag-counts',
-//         data,
-//         {
-//             labels: ['submissions', 'tags'],
-//             xlabel: 'Number of submissions',
-//             ylabel: 'Number of tags',
-//         });
-// });
