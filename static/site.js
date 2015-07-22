@@ -4,8 +4,8 @@ d3.json('/query?query=main_genders', function (error, j) {
     });
     var svg = dimple.newSvg('#main-genders', 800, 300);
     var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 200)
-    chart.addMeasureAxis('x', 'count');
+    chart.setBounds(120, 30, 660, 200);
+    chart.addMeasureAxis('x', 'count').showGridlines = false;
     chart.addCategoryAxis('y', 'gender');
     chart.addSeries(null, dimple.plot.bar);
     chart.draw();
@@ -17,8 +17,10 @@ d3.json('/query?query=other_genders', function (error, j) {
     });
     var svg = dimple.newSvg('#other-genders', 800, 600);
     var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'count').tickFormat = 'd';
+    chart.setBounds(120, 30, 660, 500);
+    var axisX = chart.addMeasureAxis('x', 'count');
+    axisX.tickFormat = 'd';
+    axisX.showGridlines = false;
     chart.addCategoryAxis('y', 'gender');
     chart.addSeries(null, dimple.plot.bar);
     chart.draw();
@@ -35,6 +37,7 @@ d3.json('/query?query=ages', function (error, j) {
             labels: ['age', 'users'],
             xlabel: 'Age',
             ylabel: 'Number of users',
+            drawGrid: false,
         });
 });
 
@@ -49,8 +52,9 @@ d3.json('/query?query=users_by_day', function (error, j) {
         data,
         {
             labels: ['date', 'users'],
-            xlabel: 'Registration date',
-            ylabel: 'Number of users',
+            xlabel: 'Date',
+            ylabel: 'New users registered',
+            drawGrid: false,
         });
 });
 
@@ -94,10 +98,11 @@ d3.json('/query?query=submissions_by_day_and_rating', function (error, j) {
         data,
         {
             labels: ['date'].concat(ratingOrder),
-            xlabel: 'Submission date',
-            ylabel: 'Number of submissions',
+            xlabel: 'Date',
+            ylabel: 'Submissions',
             stackedGraph: true,
             legend: 'always',
+            drawGrid: false,
         });
 });
 
@@ -119,14 +124,16 @@ d3.json('/query?query=submissions_by_day_and_rating', function (error, j) {
         data,
         {
             labels: ['date'].concat(ratingOrder),
-            xlabel: 'Submission date',
+            xlabel: 'Date',
             ylabel: 'Percentage of total submissions',
             stackedGraph: true,
             legend: 'always',
             rollPeriod: 20,
+            drawGrid: false,
             axes: {
                 y: {
                     valueFormatter: d3.format('.3p'),
+                    axisLabelFormatter: d3.format('.1p'),
                 },
             },
         });
@@ -149,14 +156,16 @@ d3.json('/query?query=submissions_by_day_and_type', function (error, j) {
         data,
         {
             labels: ['date'].concat(submissionTypeOrder),
-            xlabel: 'Submission date',
+            xlabel: 'Date',
             ylabel: 'Percentage of total submissions',
             stackedGraph: true,
             legend: 'always',
             rollPeriod: 20,
+            drawGrid: false,
             axes: {
                 y: {
                     valueFormatter: d3.format('.3p'),
+                    axisLabelFormatter: d3.format('.1p'),
                 },
             },
         });
@@ -168,8 +177,8 @@ d3.json('/query?query=tag_popularity', function (error, j) {
     });
     var svg = dimple.newSvg('#popular-tags', 800, 600);
     var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'submissions');
+    chart.setBounds(120, 30, 660, 500);
+    chart.addMeasureAxis('x', 'submissions').showGridlines = false;
     chart.addCategoryAxis('y', 'tag');
     chart.addSeries(null, dimple.plot.bar);
     chart.draw();
@@ -181,8 +190,8 @@ d3.json('/query?query=tag_favorites', function (error, j) {
     });
     var svg = dimple.newSvg('#tag-favorites', 800, 600);
     var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'favorites');
+    chart.setBounds(120, 30, 660, 500);
+    chart.addMeasureAxis('x', 'favorites').showGridlines = false;
     chart.addCategoryAxis('y', 'tag');
     chart.addSeries(null, dimple.plot.bar);
     chart.draw();
@@ -196,17 +205,17 @@ d3.json('/query?query=tag_popularity_favorites', function (error, j) {
 
     var svg = dimple.newSvg('#tag-use-favorites', 800, 600);
     var chart = new dimple.chart(svg, data.slice(20));
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'favorites');
-    chart.addMeasureAxis('y', 'submissions');
+    chart.setBounds(120, 30, 660, 500);
+    chart.addMeasureAxis('x', 'favorites').showGridlines = false;
+    chart.addMeasureAxis('y', 'submissions').showGridlines = false;
     chart.addSeries(['tag'], dimple.plot.bubble);
     chart.draw();
 
     var svg = dimple.newSvg('#tag-use-favorites-full', 800, 600);
     var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'favorites');
-    chart.addMeasureAxis('y', 'submissions');
+    chart.setBounds(120, 30, 660, 500);
+    chart.addMeasureAxis('x', 'favorites').showGridlines = false;
+    chart.addMeasureAxis('y', 'submissions').showGridlines = false;
     chart.addSeries(['tag'], dimple.plot.bubble);
     chart.draw();
 });
@@ -219,17 +228,25 @@ d3.json('/query?query=tag_interest', function (error, j) {
 
     var svg = dimple.newSvg('#tag-interest', 800, 600);
     var chart = new dimple.chart(svg, data.slice(20));
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'percentage of tagged submissions favorited').tickFormat = '.3p';
-    chart.addMeasureAxis('y', 'percentage of submissions with tag').tickFormat = '.3p';
+    chart.setBounds(120, 30, 660, 500);
+    var axisX = chart.addMeasureAxis('x', 'percentage of tagged submissions favorited')
+    axisX.tickFormat = '.3p';
+    axisX.showGridlines = false;
+    var axisY = chart.addMeasureAxis('y', 'percentage of submissions with tag')
+    axisY.tickFormat = '.3p';
+    axisY.showGridlines = false;
     chart.addSeries(['tag'], dimple.plot.bubble);
     chart.draw();
 
     var svg = dimple.newSvg('#tag-interest-full', 800, 600);
     var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'percentage of tagged submissions favorited').tickFormat = '.3p';
-    chart.addMeasureAxis('y', 'percentage of submissions with tag').tickFormat = '.3p';
+    chart.setBounds(120, 30, 660, 500);
+    var axisX = chart.addMeasureAxis('x', 'percentage of tagged submissions favorited')
+    axisX.tickFormat = '.3p';
+    axisX.showGridlines = false;
+    var axisY = chart.addMeasureAxis('y', 'percentage of submissions with tag')
+    axisY.tickFormat = '.3p';
+    axisY.showGridlines = false;
     chart.addSeries(['tag'], dimple.plot.bubble);
     chart.draw();
 });
@@ -245,9 +262,9 @@ d3.json('/query?query=other_rating_statistics', function (error, j) {
     });
     var svg = dimple.newSvg('#rating-views-favorites', 800, 600);
     var chart = new dimple.chart(svg, newData);
-    chart.setBounds(120, 30, 660, 500)
+    chart.setBounds(120, 30, 660, 500);
     chart.addCategoryAxis('y', ['rating', 'category']);
-    chart.addMeasureAxis('x', 'count');
+    chart.addMeasureAxis('x', 'count').showGridlines = false;
     chart.addSeries('category', dimple.plot.bar);
     chart.addLegend(65, 10, 510, 20, 'right');
     chart.draw();
@@ -259,16 +276,18 @@ d3.json('/query?query=submission_pct_views_favorites_comments_submissions_by_rat
     var newData = [];
     data.forEach(function (v) {
         var rating = ratings.get(v[0]);
-        newData.push({rating: rating, category: 'percent of total page views', percent: v[1]});
-        newData.push({rating: rating, category: 'percent of total favorites', percent: v[2]});
-        newData.push({rating: rating, category: 'percent of total comments', percent: v[3]});
-        newData.push({rating: rating, category: 'percent of all submissions', percent: v[4]});
+        newData.push({rating: rating, category: 'page views', 'percent of total': v[1]});
+        newData.push({rating: rating, category: 'favorites', 'percent of total': v[2]});
+        newData.push({rating: rating, category: 'comments', 'percent of total': v[3]});
+        newData.push({rating: rating, category: 'submissions', 'percent of total': v[4]});
     });
     var svg = dimple.newSvg('#rating-pct-views-favorites-comments-submissions', 800, 600);
     var chart = new dimple.chart(svg, newData);
-    chart.setBounds(120, 30, 660, 500)
+    chart.setBounds(120, 30, 660, 500);
     chart.addCategoryAxis('y', ['rating', 'category']);
-    chart.addMeasureAxis('x', 'percent').tickFormat = '.3p';
+    var axisX = chart.addMeasureAxis('x', 'percent of total')
+    axisX.tickFormat = '.3p';
+    axisX.showGridlines = false;
     chart.addSeries('category', dimple.plot.bar);
     chart.addLegend(65, 10, 510, 20, 'right');
     chart.draw();
@@ -280,9 +299,13 @@ d3.json('/query?query=follows_vs_submissions', function (error, j) {
     });
     var svg = dimple.newSvg('#follows-vs-submissions', 800, 600);
     var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'submissions').tickFormat = 'd';
-    chart.addMeasureAxis('y', 'follows').tickFormat = 'd';
+    chart.setBounds(120, 30, 660, 500);
+    var axisX = chart.addMeasureAxis('x', 'submissions')
+    axisX.tickFormat = 'd';
+    axisX.showGridlines = false;
+    var axisY = chart.addMeasureAxis('y', 'follows')
+    axisY.tickFormat = 'd';
+    axisY.showGridlines = false;
     chart.addSeries('user', dimple.plot.bubble).addEventHandler('click', function (ev) {
         window.open('https://www.weasyl.com/~' + ev.seriesValue, '_blank');
     });
@@ -295,9 +318,13 @@ d3.json('/query?query=favorites_vs_view_time', function (error, j) {
     });
     var svg = dimple.newSvg('#submission-visits-vs-view-time-vs-favorites', 800, 600);
     var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'average view time (s) yesterday').tickFormat = 'd';
-    chart.addMeasureAxis('y', 'total favorites').tickFormat = 'd';
+    chart.setBounds(120, 30, 660, 500);
+    var axisX = chart.addMeasureAxis('x', 'average view time (s) yesterday')
+    axisX.tickFormat = 'd';
+    axisX.showGridlines = false;
+    var axisY = chart.addMeasureAxis('y', 'total favorites')
+    axisY.tickFormat = 'd';
+    axisY.showGridlines = false;
     chart.addColorAxis('visits yesterday').tickFormat = 'd';
     chart.addSeries(['id', 'type'], dimple.plot.bubble).addEventHandler('click', function (ev) {
         var submitid = ev.seriesValue[0];
@@ -312,8 +339,10 @@ d3.json('/query?query=top_reporters', function (error, j) {
     });
     var svg = dimple.newSvg('#top-reporters', 800, 600);
     var chart = new dimple.chart(svg, data);
-    chart.setBounds(120, 30, 660, 500)
-    chart.addMeasureAxis('x', 'reports').tickFormat = 'd';
+    chart.setBounds(120, 30, 660, 500);
+    var axisX = chart.addMeasureAxis('x', 'reports');
+    axisX.tickFormat = 'd';
+    axisX.showGridlines = false;
     chart.addCategoryAxis('y', 'reporter');
     chart.addSeries(null, dimple.plot.bar);
     chart.draw();

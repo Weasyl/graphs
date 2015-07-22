@@ -5,30 +5,26 @@
   h3 { margin: 5em 0 1em; }
 </style>
 
-<h3>Gender frequency</h3>
+<h3>Gender choice: male vs. female vs. all others</h3>
 <div class="graph" id="main-genders" style="height: 300px"></div>
-<p>The two main genders plotted against all other non-empty genders.</p>
 <div class="graph" id="other-genders"></div>
 <p>The top 25 genders which are not 'male' or 'female'.</p>
-<h3>Age frequency</h3>
+<h3>User ages</h3>
 <div class="graph" id="ages"></div>
-<h3>User registrations over time</h3>
+<h3>User registrations per day</h3>
 <div class="graph" id="users"></div>
-<h3>Submissions over time</h3>
+<h3>Submissions per day</h3>
 <div class="graph" id="submissions"></div>
-<h3>Submissions by rating over time</h3>
+<h3>Submissions by rating</h3>
 <div class="graph" id="submissions-by-rating"></div>
-<h3>Submissions by type over time</h3>
+<h3>Submissions by type</h3>
 <div class="graph" id="submissions-by-type"></div>
-<h3>Most used tags</h3>
+<h3>Most common tags</h3>
 <div class="graph" id="popular-tags"></div>
-<p>The number of submissions tagged with a tag for the top 25 tags.</p>
-<h3>Most favorites by tag</h3>
+<h3>Most favorited tags</h3>
 <div class="graph" id="tag-favorites"></div>
-<p>The sum of the number of favorites on each submission tagged with a tag for the top 25 tags.</p>
-<h3>Tag use/favorites</h3>
+<h3>100 most common tags</h3>
 <div class="graph" id="tag-use-favorites-full"></div>
-<p>The number of submissions with a tag plotted against the sum of the number of favorites on each subission tagged with a tag for the top 100 tags.</p>
 <div class="graph" id="tag-use-favorites"></div>
 <p>Same as the previous graph, except excluding the very top 20 tags.</p>
 <h3>Tag interest</h3>
@@ -41,23 +37,22 @@
 </p>
 <div class="graph" id="tag-interest"></div>
 <p>Same as the previous graph, except excluding the very top 20 tags.</p>
-<h3>Average views/favorites by rating</h3>
+<h3>Average views and favorites</h3>
 <div class="graph" id="rating-views-favorites"></div>
-<p>The average number of submission page views and favorites by rating.</p>
-<h3>Percentage of views/favorites/comments/submissions by rating</h3>
+<h3>Rating distributions for various metrics</h3>
 <div class="graph" id="rating-pct-views-favorites-comments-submissions"></div>
-<p>The percentage of the total number of views, favorites, comments, and submissions each rating has.</p>
 <h3>Follows vs. submissions</h3>
 <div class="graph" id="follows-vs-submissions"></div>
-<p>The number of follows a user has plotted against the number of submissions the same user has posted, for the top 250 users.</p>
+<p>
+  The number of follows a user has plotted against the number of
+  submissions the same user has posted, for the top 250 users by
+  followers or submissions.
+</p>
 <h3>Submission visits vs. view time vs. favorites</h3>
 <div class="graph" id="submission-visits-vs-view-time-vs-favorites"></div>
 <p>
-  The number of total favorites of a submission plotted against the
-  average number of seconds users spent viewing that submission
-  yesterday plotted against the number of views which that submission
-  got yesterday, for the top 200 submissions by number of views
-  yesterday.
+  The top 200 submissions by number of views yesterday. Darkness
+  corresponds to the number of views a submission got.
 </p>
 <h3>Top reporters</h3>
 <div class="graph" id="top-reporters"></div>
